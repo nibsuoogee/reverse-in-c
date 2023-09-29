@@ -46,6 +46,19 @@ int main(int argc, char *argv[]) {
         LINKEDLIST *pNew;
         pNew = addLink(pNew);
         characters = getline(&pNew->buffer, &bufsize, inputFile);
+        if (characters == -1) {
+            break;
+        }
+        
+        if (pNew->buffer[strlen(pNew->buffer)-1] != '\n') {
+            if ((pNew->buffer = (char*)realloc(pNew->buffer, sizeof(char) * strlen(pNew->buffer)+2)) == NULL ) {
+                fprintf(stderr, "malloc failed\n");
+                exit(1);
+            }
+            memcpy(pNew->buffer+strlen(pNew->buffer)+1,"\0",1);
+            memcpy(pNew->buffer+strlen(pNew->buffer),"\n",1);
+        }
+        
         if (pStart == NULL) {
             pStart = pNew;
             ptr = pStart;
@@ -63,7 +76,7 @@ int main(int argc, char *argv[]) {
         fprintf(outputFile, "%s", ptr->buffer);
         ptr = ptr->pPrevious;
     }
-    
+
     pStart = freeList(pStart);
     free(buffer);
     pEnd, ptr, pNew, buffer = NULL;
