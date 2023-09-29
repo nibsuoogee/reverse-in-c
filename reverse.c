@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     FILE *inputFile;
     FILE *outputFile = stdout;
     char *buffer = NULL;
-    size_t bufsize = 64;
+    size_t bufsize = 0;
     size_t characters;
     LINKEDLIST *pStart = NULL, *pEnd = NULL;
     LINKEDLIST *pNew, *ptr;
@@ -41,13 +41,11 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "error: cannot open file %s\n", argv[1]);
         exit(1);
     }
-
-    characters = getline(&buffer, &bufsize, inputFile);
+    
     while (characters != -1) {
         LINKEDLIST *pNew;
         pNew = addLink(pNew);
-        strcpy(pNew->buffer, buffer);
-
+        characters = getline(&pNew->buffer, &bufsize, inputFile);
         if (pStart == NULL) {
             pStart = pNew;
             ptr = pStart;
@@ -58,9 +56,8 @@ int main(int argc, char *argv[]) {
             ptr = pNew;
             pEnd = ptr;
         }
-        characters = getline(&buffer, &bufsize, inputFile);
     }
-    
+
     ptr = pEnd;
     while (ptr != NULL) {
         fprintf(outputFile, "%s", ptr->buffer);
@@ -68,6 +65,8 @@ int main(int argc, char *argv[]) {
     }
     
     pStart = freeList(pStart);
+    free(buffer);
+    pEnd, ptr, pNew, buffer = NULL;
     fclose(inputFile);
     return(0);
 }
